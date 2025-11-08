@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Ulang Tahun, opi!</title>
+    <!-- Memuat Tailwind CSS untuk styling cepat --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font kustom yang lebih casual dan manis --><link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden; /* Mencegah scroll saat transisi antar adegan */
+        }
+
+        h1, h2, h3, #final-message-text {
+            font-family: 'Pacifico', cursive; /* Font untuk judul dan pesan utama */
+        }
+
+        /* Animasi kursor mengetik */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Animasi api lilin */
+        #flame {
+            animation: flicker 1.5s infinite alternate;
+            transform-origin: bottom;
+        }
+
+        @keyframes flicker {
+            0%, 100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+            50% { transform: scaleY(0.9) scaleX(1.1); opacity: 0.8; }
+        }
+
+        /* Animasi tiupan angin */
+        @keyframes blow-effect {
+            0% {
+                transform: translateX(-150%) scaleX(0.5);
+                opacity: 0.2;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(150%) scaleX(1.2);
+                opacity: 0;
+            }
+        }
+        
+        #wind-puff.blowing {
+            animation: blow-effect 1.8s ease-out forwards;
+        }
+
+        /* Animasi untuk confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #fce4ec; /* Pink muda */
+            opacity: 0;
+            animation: fall 3s ease-out forwards;
+        }
+        .confetti:nth-child(2n) { background-color: #e0f2f7; /* Biru muda */ }
+        .confetti:nth-child(3n) { background-color: #fffde7; /* Kuning muda */ }
+        .confetti:nth-child(4n) { background-color: #e8eaf6; /* Lavender muda */ }
+
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        /* Animasi Bintang Jatuh (BARU) */
+        @keyframes fly-star {
+            0% {
+                transform: translate(-300px, -200px) rotate(-45deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(300px, 400px) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+
+        #shooting-star {
+            position: absolute;
+            width: 3px;
+            height: 200px;
+            background: linear-gradient(to top, transparent, white);
+            border-radius: 50%;
+            opacity: 0;
+            /* ANimasi DIHAPUS dari sini dan dipindahkan ke class .fly */
+            /* animation: fly-star 2.5s ease-in-out 1.5s forwards; */
+        }
+
+        /* Kelas BARU untuk memicu animasi */
+        .fly {
+            /* Delay 1.5 detik setelah adegan muncul, durasi 2.5 detik */
+            animation: fly-star 2.5s ease-in-out 1.5s forwards; 
+        }
+
+        /* Animasi denyut untuk tombol pembuka */
+        @keyframes pulse-white {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+            }
+        }
+        
+        #opener-button {
+            animation: pulse-white 2.5s infinite;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Adegan 1: Halaman Pembuka Minimalis (Pengganti Pita) -->
+    <div id="scene1" class="fixed inset-0 bg-gradient-to-br from-purple-300 to-pink-300 flex items-center justify-center z-50 transition-opacity duration-1000">
+        <div id="opener-button" class="w-48 h-48 bg-white/30 rounded-full flex items-center justify-center text-center p-4 text-white text-xl font-semibold cursor-pointer shadow-lg backdrop-blur-sm">
+            Sentuh di sini...
+        </div>
+    </div>
+
+    <!-- Adegan 2: Animasi Mengetik dengan Pesan Personal -->
+    <div id="scene2" class="fixed inset-0 bg-gradient-to-bl from-purple-800 to-indigo-900 text-white flex items-center justify-center z-40 opacity-0 transition-opacity duration-700 pointer-events-none p-4">
+        <div id="text-container" class="text-xl md:text-3xl lg:text-4xl text-center leading-relaxed max-w-2xl typing-cursor"></div>
+    </div>
+
+    <!-- Adegan 3: Bintang Jatuh (Pengganti Kue/Cupcake) -->
+    <div id="scene3" class="fixed inset-0 bg-gradient-to-br from-indigo-900 to-black flex items-center justify-center z-30 opacity-0 transition-opacity duration-700 pointer-events-none p-4 overflow-hidden">
+        <div id="shooting-star"></div>
+    </div>
+
+    <!-- Adegan 4: Pesan Akhir yang Ceria (Hanya Judul) -->
+    <div id="scene4" class="fixed inset-0 bg-gradient-to-br from-purple-300 to-pink-300 flex items-center justify-center z-20 opacity-0 transition-opacity duration-1000 pointer-events-none">
+        <div class="relative w-full h-full flex items-center justify-center overflow-hidden">
+            <!-- Confetti (akan dibuat secara dinamis dengan JS) -->
+            <div id="confetti-container" class="absolute inset-0 pointer-events-none"></div>
+
+            <div id="final-message-card" class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 md:p-12 text-center transform scale-0 opacity-0 transition-all duration-1000 ease-out z-10 max-w-3xl">
+                <h1 id="final-message-text" class="text-5xl md:text-7xl lg:text-8xl text-purple-700 leading-tight">
+                    Happy Birthday Lov!
+                </h1>
+                <!-- Paragraf tambahan telah dihapus sesuai permintaan -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scene1 = document.getElementById('scene1');
+        const scene2 = document.getElementById('scene2');
+        const scene3 = document.getElementById('scene3');
+        const scene4 = document.getElementById('scene4');
+
+        const openerButton = document.getElementById('opener-button'); // Diubah dari giftBox
+        const textContainer = document.getElementById('text-container');
+        const finalMessageCard = document.getElementById('final-message-card');
+        const confettiContainer = document.getElementById('confetti-container');
+
+        const messages = [
+            "Hai Opi ... !",
+            "Happy Birthday Again, this is the third time I say it to you on this date! 🎉",
+            "Not many things I could say to you on this stage,",
+            "But I can say that I am really grateful to have know you.",
+            "May Allah always bless you with happiness and health.",
+            "May Allah always guide you in every step you take.",
+            "May Allah always open the doors of success for you.",
+            "and most importantly,",
+            "Hopefully you could achieve all of your dreams.",
+            "Make a wish, Pi !"
+        ];
+
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function typeMessage(text) {
+            textContainer.innerHTML = '';
+            textContainer.classList.remove('typing-cursor'); // Hapus kursor sementara
+            for (let i = 0; i < text.length; i++) {
+                textContainer.innerHTML += text.charAt(i);
+                await wait(80); // Kecepatan mengetik lebih santai
+            }
+            textContainer.classList.add('typing-cursor'); // Tambah kursor setelah selesai
+        }
+
+        async function startScene2() {
+            scene1.classList.add('opacity-0');
+            scene1.classList.add('pointer-events-none');
+            await wait(700); // Tunggu sampai scene1 benar-benar hilang
+
+            scene2.classList.remove('opacity-0');
+            scene2.classList.remove('pointer-events-none');
+            await wait(500); // Jeda sebelum mengetik
+
+            for (const msg of messages) {
+                await typeMessage(msg);
+                await wait(2000); // Jeda antar pesan lebih panjang
+            }
+
+            startScene3();
+        }
+
+        async function startScene3() {
+            scene2.classList.add('opacity-0');
+            scene2.classList.add('pointer-events-none');
+            await wait(700);
+
+            scene3.classList.remove('opacity-0');
+            scene3.classList.remove('pointer-events-none');
+
+            // BARU: Picu animasi bintang jatuh dengan menambahkan kelas .fly
+            document.getElementById('shooting-star').classList.add('fly');
+            
+            // Kita hanya perlu menunggu animasi bintang jatuh selesai.
+            // Animasi memiliki delay 1.5s + durasi 2.5s = 4 detik
+            await wait(2500); // Beri waktu 4.5 detik untuk adegan ini
+
+            // Mulai adegan 4
+            startScene4();
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) { // Jumlah confetti
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.transform = `scale(${0.5 + Math.random()})`;
+                confetti.style.opacity = '0'; // Awalnya sembunyi
+                confettiContainer.appendChild(confetti);
+            }
+        }
+
+        async function startScene4() {
+            scene3.classList.add('opacity-0');
+            scene3.classList.add('pointer-events-none');
+            await wait(700);
+
+            scene4.classList.remove('opacity-0');
+            scene4.classList.remove('pointer-events-none');
+
+            createConfetti(); // Buat confetti
+
+            await wait(500); // Jeda sebelum kartu pesan muncul
+
+            finalMessageCard.classList.remove('scale-0', 'opacity-0');
+            finalMessageCard.classList.add('scale-100', 'opacity-100');
+        }
+
+        // Event listener untuk memulai Adegan 2 (diubah ke tombol baru)
+        openerButton.addEventListener('click', startScene2);
+
+    </script>
+</body>
+</html>
